@@ -1,0 +1,20 @@
+export const ROUTES = {
+  ROOT_STACK: 'RootStack',
+  SPLASH: 'Splash',
+  LOGIN: 'Login',
+  OTP: 'Otp',
+  MAIN_TABS: 'MainTabs',
+  HOME: 'Home',
+  TRIPS: 'Trips',
+  SCAN: 'Scan',
+  SETTINGS: 'Settings',
+  TRIP_DETAIL: 'TripDetail',
+  NOTIFICATIONS: 'Notifications',
+  PROFILE_DETAIL: 'ProfileDetail',
+  TRIP_PASSENGERS: 'TripPassengers',
+  SCAN_TICKET: 'ScanTicket',
+  BOARD_SCAN_SUCCESS: 'BoardScanSuccess',
+  BOARD_SCAN_RESULT: 'BoardScanResult',
+  PERMISSIONS: 'Permissions',
+} as const;
+
