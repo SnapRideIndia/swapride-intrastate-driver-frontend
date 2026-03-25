@@ -63,6 +63,12 @@ const ActiveTripActions = ({
           canBoard: true,
         })
       }
+      onViewManifest={() =>
+        navigation.navigate(ROUTES.ROUTE_MANIFEST, {
+          tripId: trip.id,
+          routeName: trip.routeName,
+        })
+      }
       onEndTrip={handleEndTrip}
     />
   );
@@ -101,6 +107,12 @@ const UpcomingTripActions = ({
       trip={trip}
       onStartTrip={handleStartTrip}
       onViewPassengers={openManifest}
+      onViewManifest={() =>
+        navigation.navigate(ROUTES.ROUTE_MANIFEST, {
+          tripId: trip.id,
+          routeName: trip.routeName,
+        })
+      }
     />
   );
 };

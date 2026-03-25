@@ -37,6 +37,7 @@ const TripCard = ({ trip, onPress }: Props) => {
       </View>
 
       <Text style={styles.routeName} numberOfLines={1}>{trip.routeName}</Text>
+      
 
       <View style={styles.timesRow}>
         <Text style={styles.time}>{trip.scheduledStartTime}</Text>
@@ -67,6 +68,11 @@ const TripCard = ({ trip, onPress }: Props) => {
             </Text>
           </View>
         )}
+        
+        <View style={styles.footerRight}>
+          <Text style={styles.roadmapLinkText}>VIEW DETAILED ROUTE</Text>
+          <ChevronRight size={14} color={colors.primary} strokeWidth={2.5} />
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -115,6 +121,19 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.textPrimary,
     letterSpacing: -0.2,
+  },
+  footerRight: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: 2,
+  },
+  roadmapLinkText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: colors.primary,
+    letterSpacing: 0.5,
   },
   timesRow: {
     flexDirection: 'row',

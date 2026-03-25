@@ -16,5 +16,6 @@ export const ROUTES = {
   BOARD_SCAN_SUCCESS: 'BoardScanSuccess',
   BOARD_SCAN_RESULT: 'BoardScanResult',
   PERMISSIONS: 'Permissions',
+  ROUTE_MANIFEST: 'RouteManifest',
 } as const;
 

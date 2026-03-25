@@ -1,12 +1,17 @@
-import React from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
+import { AppState, AppStateStatus, Platform } from 'react-native';
+import {
+  QueryClient,
+  QueryClientProvider,
+  focusManager,
+} from '@tanstack/react-query';
 import { isAxiosError } from 'axios';
 
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5,   // 5 min
-      gcTime: 1000 * 60 * 10,     // 10 min
+      staleTime: 1000 * 60 * 5, // 5 min
+      gcTime: 1000 * 60 * 10, // 10 min
       retry: (failureCount, error) => {
         if (isAxiosError(error) && error.response) {
           const status = error.response.status;
@@ -14,7 +19,7 @@ export const queryClient = new QueryClient({
         }
         return failureCount < 2;
       },
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
     },
     mutations: {
       retry: 0,
@@ -22,10 +27,23 @@ export const queryClient = new QueryClient({
   },
 });
 
+function onAppStateChange(status: AppStateStatus) {
+  if (Platform.OS !== 'web') {
+    focusManager.setFocused(status === 'active');
+  }
+}
+
 type Props = { children: React.ReactNode };
 
-const QueryProvider = ({ children }: Props) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-);
+const QueryProvider = ({ children }: Props) => {
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', onAppStateChange);
+    return () => subscription.remove();
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
 
 export default QueryProvider;

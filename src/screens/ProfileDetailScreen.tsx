@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { ChevronLeft, Save, Phone, FileText, Star, Clock, User, Wifi } from 'lucide-react-native';
+import { ChevronLeft, Save, Phone, FileText, Star, Clock, User, Wifi, AlertTriangle, RefreshCw } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 import Loader from '../components/ui/Loader';
 import { useDriver } from '../context/DriverContext';
@@ -44,9 +44,9 @@ const getInitials = (name: string) =>
 
 
 const ProfileDetailScreen = () => {
+  const { driver, isLoading, isError, refetch } = useDriver();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const { driver } = useDriver();
 
   const [name, setName] = useState(driver?.name ?? '');
   const [selectedStatus, setSelectedStatus] = useState<DriverStatus>(
@@ -67,13 +67,37 @@ const ProfileDetailScreen = () => {
     updateProfile(payload);
   }, [isDirty, isPending, name, selectedStatus, driver, updateProfile]);
 
-  if (!driver) {
+  if (isLoading && !driver) {
     return (
       <View style={styles.loadingRoot}>
         <Loader message="Loading profile…" />
       </View>
     );
   }
+
+  if (isError && !driver) {
+    return (
+      <View style={[styles.errorRoot, { paddingTop: insets.top }]}>
+        <View style={styles.errorContent}>
+          <AlertTriangle size={60} color={colors.error} strokeWidth={1.5} />
+          <Text style={styles.errorTitle}>Failed to load profile</Text>
+          <Text style={styles.errorSubtitle}>
+            There was a problem fetching your driver account details.
+          </Text>
+          <TouchableOpacity 
+            style={styles.retryBtn} 
+            onPress={refetch}
+            activeOpacity={0.8}
+          >
+            <RefreshCw size={18} color={colors.surface} strokeWidth={2.5} />
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
+  if (!driver) return null;
 
   const rating = parseFloat(String(driver.rating)).toFixed(1);
 
@@ -275,6 +299,44 @@ const styles = StyleSheet.create({
   loadingRoot: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  errorRoot: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  errorContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 40,
+    gap: 16,
+  },
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: colors.textPrimary,
+    marginTop: 8,
+  },
+  errorSubtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  retryBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: colors.primary,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginTop: 8,
+  },
+  retryText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.surface,
   },
   header: {
     flexDirection: 'row',

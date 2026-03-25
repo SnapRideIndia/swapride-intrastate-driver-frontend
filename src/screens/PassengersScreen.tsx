@@ -20,6 +20,7 @@ import {
   Clock,
   XCircle,
   Phone,
+  MapPin,
 } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 import Loader from '../components/ui/Loader';
@@ -94,15 +95,8 @@ const PassengerRow = ({
       Alert.alert('No number', 'This passenger has no phone number on file.');
       return;
     }
-    if (!toTelHref(raw)) {
-      Alert.alert('Invalid number', 'This phone number cannot be dialed.');
-      return;
-    }
-    Alert.alert('Call passenger', `${passenger.passengerName}\n${raw}`, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Call', onPress: () => openPassengerDialer(raw) },
-    ]);
-  }, [passenger.passengerName, passenger.passengerPhone]);
+    openPassengerDialer(raw);
+  }, [passenger.passengerPhone]);
 
   const seatNumbers =
     passenger.seats.length === 0
@@ -264,6 +258,14 @@ const PassengersScreen = ({ navigation, route }: Props) => {
           );
         })}
       </View>
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate(ROUTES.ROUTE_MANIFEST, { tripId, routeName })}
+        style={styles.roadmapBtn}
+        activeOpacity={0.7}>
+        <MapPin size={14} color={colors.primary} strokeWidth={2.5} />
+        <Text style={styles.roadmapBtnText}>View Detailed Route Roadmap</Text>
+      </TouchableOpacity>
 
       {isLoading ? (
         <Loader message="Loading passengers…" />
@@ -619,6 +621,21 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
     paddingHorizontal: 32,
+  },
+  roadmapBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: colors.surface,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  roadmapBtnText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.primary,
   },
 });
 

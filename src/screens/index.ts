@@ -13,3 +13,4 @@ export { default as PermissionsScreen } from './PermissionsScreen';
 export { default as ScanTicketScreen } from './ScanTicketScreen';
 export { default as BoardScanSuccessScreen } from './BoardScanSuccessScreen';
 export { default as BoardScanResultScreen } from './BoardScanResultScreen';
+export { default as RouteManifestScreen } from './RouteManifestScreen';

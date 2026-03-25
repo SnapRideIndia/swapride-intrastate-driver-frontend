@@ -8,10 +8,11 @@ type Props = {
   trip: ApiTripSummary;
   isTracking: boolean;
   onViewPassengers: () => void;
+  onViewManifest?: () => void;
   onEndTrip: () => void;
 };
 
-const ActiveTripCard = ({ trip, isTracking, onViewPassengers, onEndTrip }: Props) => {
+const ActiveTripCard = ({ trip, isTracking, onViewPassengers, onViewManifest, onEndTrip }: Props) => {
   const dotOpacity  = useRef(new Animated.Value(1)).current;
   const badgeScale  = useRef(new Animated.Value(1)).current;
   const pulseAnim   = useRef<Animated.CompositeAnimation | null>(null);
@@ -98,9 +99,17 @@ const ActiveTripCard = ({ trip, isTracking, onViewPassengers, onEndTrip }: Props
       <View style={styles.divider} />
 
       <View style={styles.passengersRow}>
-        <Users size={14} color={colors.tabBarInactive} strokeWidth={2} />
-        <Text style={styles.passengersLabel}>Confirmed Passengers</Text>
-        <Text style={styles.passengersCount}>{trip.totalPassengers}</Text>
+        <View style={styles.passengersInfo}>
+          <Users size={14} color={colors.tabBarInactive} strokeWidth={2} />
+          <Text style={styles.passengersLabel}>Confirmed Passengers</Text>
+          <Text style={styles.passengersCount}>{trip.totalPassengers}</Text>
+        </View>
+
+        {onViewManifest && (
+          <TouchableOpacity onPress={onViewManifest} activeOpacity={0.7}>
+            <Text style={styles.detailedRoute}>View Detailed Route</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.buttonsRow}>
@@ -204,10 +213,15 @@ const styles = StyleSheet.create({
   passengersRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between', // Changed
+    gap: 6,
+  },
+  passengersInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
   },
   passengersLabel: {
-    flex: 1,
     fontSize: 13,
     color: colors.tabBarInactive,
     fontWeight: '500',
@@ -216,6 +230,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: colors.surface,
+  },
+  detailedRoute: {
+    fontSize: 12,
+    color: colors.surface,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
+    opacity: 0.9,
   },
   buttonsRow: {
     flexDirection: 'row',

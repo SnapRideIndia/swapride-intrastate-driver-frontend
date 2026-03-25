@@ -13,6 +13,7 @@ import {
   PermissionsScreen,
   NotificationsScreen,
   ProfileDetailScreen,
+  RouteManifestScreen,
 } from '../screens';
 import { ROUTES } from './routes';
 import type { RootStackParamList } from './types';
@@ -56,6 +57,7 @@ const RootNavigator = () => {
       <Stack.Screen name={ROUTES.PROFILE_DETAIL} component={ProfileDetailScreen} />
       <Stack.Screen name={ROUTES.SETTINGS} component={SettingsScreen} />
       <Stack.Screen name={ROUTES.PERMISSIONS} component={PermissionsScreen} />
+      <Stack.Screen name={ROUTES.ROUTE_MANIFEST} component={RouteManifestScreen} />
     </Stack.Navigator>
   );
 };

@@ -28,4 +28,5 @@ export type RootStackParamList = {
   [ROUTES.PROFILE_DETAIL]: undefined;
   [ROUTES.SETTINGS]: undefined;
   [ROUTES.PERMISSIONS]: undefined;
+  [ROUTES.ROUTE_MANIFEST]: { tripId: string; routeName: string };
 };

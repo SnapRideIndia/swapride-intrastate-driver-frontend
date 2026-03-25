@@ -10,9 +10,10 @@ type Props = {
   onStartTrip: () => void;
   /** Opens passenger manifest (boarding allowed only after trip is in progress). */
   onViewPassengers?: () => void;
+  onViewManifest?: () => void;
 };
 
-const UpcomingTripCard = ({ trip, onStartTrip, onViewPassengers }: Props) => {
+const UpcomingTripCard = ({ trip, onStartTrip, onViewPassengers, onViewManifest }: Props) => {
   return (
     <View style={styles.card}>
       <View style={styles.headerRow}>
@@ -39,15 +40,23 @@ const UpcomingTripCard = ({ trip, onStartTrip, onViewPassengers }: Props) => {
       </View>
 
       <View style={styles.metaRow}>
-        <View style={styles.metaItem}>
-          <Bus size={13} color={colors.textSecondary} strokeWidth={2} />
-          <Text style={styles.metaText}>{trip.busNumber}</Text>
+        <View style={styles.metaContent}>
+          <View style={styles.metaItem}>
+            <Bus size={13} color={colors.textSecondary} strokeWidth={2} />
+            <Text style={styles.metaText}>{trip.busNumber}</Text>
+          </View>
+          <View style={styles.metaDot} />
+          <View style={styles.metaItem}>
+            <Users size={13} color={colors.textSecondary} strokeWidth={2} />
+            <Text style={styles.metaText}>{trip.totalPassengers} confirmed</Text>
+          </View>
         </View>
-        <View style={styles.metaDot} />
-        <View style={styles.metaItem}>
-          <Users size={13} color={colors.textSecondary} strokeWidth={2} />
-          <Text style={styles.metaText}>{trip.totalPassengers} confirmed</Text>
-        </View>
+
+        {onViewManifest && (
+          <TouchableOpacity onPress={onViewManifest} activeOpacity={0.7}>
+            <Text style={styles.detailedRoute}>View Detailed Route</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.actionsCol}>
@@ -144,6 +153,12 @@ const styles = StyleSheet.create({
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 6,
+  },
+  metaContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
   },
   metaItem: {
@@ -161,6 +176,12 @@ const styles = StyleSheet.create({
     height: 3,
     borderRadius: 2,
     backgroundColor: colors.border,
+  },
+  detailedRoute: {
+    fontSize: 12,
+    color: colors.primary,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
   },
   actionsCol: {
     gap: 10,

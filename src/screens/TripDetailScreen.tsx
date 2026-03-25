@@ -190,6 +190,14 @@ const TripDetailScreen = ({ navigation, route }: Props) => {
           <Text style={styles.routeName}>{trip.routeName}</Text>
         </View>
 
+        <TouchableOpacity 
+          onPress={() => navigation.navigate(ROUTES.ROUTE_MANIFEST, { tripId: trip.id, routeName: trip.routeName })}
+          style={styles.roadmapBtn}
+          activeOpacity={0.75}>
+          <MapPin size={16} color={colors.primary} strokeWidth={2.5} />
+          <Text style={styles.roadmapBtnText}>View Detailed Route Roadmap</Text>
+        </TouchableOpacity>
+
         <View style={styles.statsStrip}>
           <View style={styles.statItem}>
             <View style={[styles.statIcon, { backgroundColor: colors.primaryTint }]}>
@@ -769,6 +777,26 @@ const styles = StyleSheet.create({
   },
   btnDisabled: {
     opacity: 0.5,
+  },
+  roadmapBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: colors.surface,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: colors.primaryTint,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  roadmapBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.primary,
   },
 });
 
