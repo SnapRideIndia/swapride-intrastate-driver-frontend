@@ -7,6 +7,25 @@
         <item name="colorPrimary">#1751BC</item>
         <item name="colorPrimaryDark">#0F3A8F</item>
         <item name="colorAccent">#1751BC</item>
+        
+        <!-- Link the custom date picker dialog theme -->
+        <item name="android:datePickerDialogTheme">@style/CustomDatePickerDialog</item>
+    </style>
+
+    <!-- Custom Date Picker Theme -->
+    <style name="CustomDatePickerDialog" parent="Theme.AppCompat.Light.Dialog">
+        <!-- colorAccent drives both the header background (in Light mode) and the selected circle -->
+        <item name="colorAccent">#1751BC</item>
+        <item name="colorPrimary">#1751BC</item>
+
+        <!-- Override OK / CANCEL buttons to be neutral gray, not primary blue -->
+        <item name="buttonBarPositiveButtonStyle">@style/DatePickerButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DatePickerButtonStyle</item>
+    </style>
+
+    <!-- Button Style for DatePicker (Gray text) -->
+    <style name="DatePickerButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">#6B7280</item>
     </style>
 
 </resources>
