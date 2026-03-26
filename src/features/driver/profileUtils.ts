@@ -8,10 +8,6 @@ const STATUSES: DriverStatus[] = [
   'BLOCKED',
 ];
 
-/**
- * Maps API payload to DriverProfile and ensures `name` is never blank when we have a phone
- * (empty string breaks `??` fallbacks in the UI).
- */
 export function normalizeDriverProfile(raw: unknown): DriverProfile {
   if (!raw || typeof raw !== 'object') {
     throw new Error('Invalid driver profile response');
@@ -43,7 +39,6 @@ export function normalizeDriverProfile(raw: unknown): DriverProfile {
   };
 }
 
-/** Greeting on Home — avoids blank line when API returns "" for name. */
 export function getDriverDisplayName(driver: DriverProfile | null | undefined): string {
   if (!driver) return '—';
   const n = driver.name?.trim();

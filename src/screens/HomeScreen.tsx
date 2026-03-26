@@ -1,13 +1,5 @@
 import React, { useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  RefreshControl,
-  Image,
-} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, RefreshControl, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Bell, MapPin, User } from 'lucide-react-native';
@@ -26,12 +18,11 @@ import { useMyTrips } from '../features/trips/hooks/useMyTrips';
 import { useUpdateTripStatus } from '../features/trips/hooks/useUpdateTripStatus';
 import { modal } from '../lib/modal';
 import type { ApiTripSummary } from '../features/trips/types';
-import { todayISO, getGreeting, formatFullDate } from '../utils/dateUtils';
+import { getGreeting, formatFullDate } from '../utils/dateUtils';
 import { getDriverDisplayName } from '../features/driver/profileUtils';
 import { listTripStatusAllowsBoarding } from '../features/trips/tripStatusUtils';
 import { sortTripsByScheduledTime } from '../features/trips/tripUtils';
-
-const MOCK_UNREAD_COUNT = 3;
+import { useNotificationStats } from '../features/notifications/hooks/useNotifications';
 
 type ActiveTripActionsProps = {
   trip: ApiTripSummary;
@@ -39,17 +30,11 @@ type ActiveTripActionsProps = {
   isTracking: boolean;
 };
 
-const ActiveTripActions = ({
-  trip,
-  navigation,
-  isTracking,
-}: ActiveTripActionsProps) => {
+const ActiveTripActions = ({ trip, navigation, isTracking }: ActiveTripActionsProps) => {
   const { mutate: updateStatus } = useUpdateTripStatus(trip.id);
 
   const handleEndTrip = () => {
-    modal.confirm('End Trip', 'Confirm completing this trip?', () =>
-      updateStatus('COMPLETED'),
-    );
+    modal.confirm('End Trip', 'Confirm completing this trip?', () => updateStatus('COMPLETED'));
   };
 
   return (
@@ -80,16 +65,11 @@ type UpcomingTripActionsProps = {
   requestBackground: () => Promise<string>;
 };
 
-const UpcomingTripActions = ({
-  trip,
-  navigation,
-  requestBackground,
-}: UpcomingTripActionsProps) => {
+const UpcomingTripActions = ({ trip, navigation, requestBackground }: UpcomingTripActionsProps) => {
   const { mutate: updateStatus } = useUpdateTripStatus(trip.id);
 
   const handleStartTrip = () => {
     modal.confirm('Start Trip', 'Confirm starting this trip?', async () => {
-      // Request background location before starting — ensures uninterrupted tracking.
       await requestBackground();
       updateStatus('IN_PROGRESS');
     });
@@ -118,9 +98,11 @@ const UpcomingTripActions = ({
 };
 
 const HomeScreen = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { driver } = useDriver();
+  const { data: stats } = useNotificationStats();
+
+  const unreadCount = stats?.unreadCount ?? 0;
 
   const {
     isGranted,
@@ -130,7 +112,6 @@ const HomeScreen = () => {
     requestBackground,
     goToSettings,
   } = useLocationPermission();
-
 
   useEffect(() => {
     if (permissionStatus === 'denied') {
@@ -167,13 +148,8 @@ const HomeScreen = () => {
   const upcomingTrips = scheduledTrips;
   const nextTrip = upcomingTrips[0] ?? null;
 
-  const totalPassengers = inProgressTrips.reduce(
-    (acc, t) => acc + t.totalPassengers,
-    0,
-  );
-  const totalTrips =
-    (inProgressData?.pagination.total ?? 0) +
-    (scheduledData?.pagination.total ?? 0);
+  const totalPassengers = inProgressTrips.reduce((acc, t) => acc + t.totalPassengers, 0);
+  const totalTrips = (inProgressData?.pagination.total ?? 0) + (scheduledData?.pagination.total ?? 0);
 
   const { isTracking, error: locationError } = useDriverLocation(
     activeTrip?.id ?? null,
@@ -208,36 +184,29 @@ const HomeScreen = () => {
         <View style={styles.header}>
           <View>
             <Text style={styles.greeting}>{getGreeting()},</Text>
-            <Text style={styles.driverName}>
-              {driver ? getDriverDisplayName(driver) : 'Partner'}
-            </Text>
+            <Text style={styles.driverName}>{driver ? getDriverDisplayName(driver) : 'Partner'}</Text>
           </View>
           <View style={styles.headerActions}>
             <Text style={styles.dateText}>{formatFullDate()}</Text>
-            {/* KEEP THIS FOR FUTURE DO NOT REMOVE */}
-            {/* <TouchableOpacity
+            <TouchableOpacity
               style={styles.bellBtn}
               onPress={() => navigation.navigate(ROUTES.NOTIFICATIONS)}
-              activeOpacity={0.7}>
+              activeOpacity={0.7}
+            >
               <Bell size={20} color={colors.textPrimary} strokeWidth={2} />
-              {MOCK_UNREAD_COUNT > 0 && (
+              {unreadCount > 0 && (
                 <View style={styles.bellBadge}>
-                  <Text style={styles.bellBadgeText}>
-                    {MOCK_UNREAD_COUNT > 9 ? '9+' : MOCK_UNREAD_COUNT}
-                  </Text>
+                  <Text style={styles.bellBadgeText}>{unreadCount > 9 ? '9+' : unreadCount}</Text>
                 </View>
               )}
-            </TouchableOpacity> */}
+            </TouchableOpacity>
             <TouchableOpacity
               style={styles.bellBtn}
               onPress={() => navigation.navigate(ROUTES.SETTINGS)}
               activeOpacity={0.7}
             >
               {driver?.profileUrl ? (
-                <Image
-                  source={{ uri: driver.profileUrl }}
-                  style={styles.profileImg}
-                />
+                <Image source={{ uri: driver.profileUrl }} style={styles.profileImg} />
               ) : (
                 <User size={20} color={colors.textPrimary} strokeWidth={2} />
               )}
@@ -246,29 +215,13 @@ const HomeScreen = () => {
         </View>
 
         {showBanner && (
-          <View
-            style={[
-              styles.permissionCard,
-              isGpsDisabled && styles.permissionCardWarning,
-            ]}
-          >
+          <View style={[styles.permissionCard, isGpsDisabled && styles.permissionCardWarning]}>
             <View style={styles.permissionInfo}>
-              <View
-                style={[
-                  styles.permissionIconBg,
-                  isGpsDisabled && styles.permissionIconBgWarning,
-                ]}
-              >
-                <MapPin
-                  size={20}
-                  color={isGpsDisabled ? colors.error : colors.primary}
-                  strokeWidth={2.5}
-                />
+              <View style={[styles.permissionIconBg, isGpsDisabled && styles.permissionIconBgWarning]}>
+                <MapPin size={20} color={isGpsDisabled ? colors.error : colors.primary} strokeWidth={2.5} />
               </View>
               <View style={styles.permissionTextWrapper}>
-                <Text style={styles.permissionTitle}>
-                  {isGpsDisabled ? 'GPS is Disabled' : 'Permissions Required'}
-                </Text>
+                <Text style={styles.permissionTitle}>{isGpsDisabled ? 'GPS is Disabled' : 'Permissions Required'}</Text>
                 <Text style={styles.permissionSubtitle}>
                   {isGpsDisabled
                     ? 'Turn on GPS to share your live bus position.'
@@ -277,13 +230,10 @@ const HomeScreen = () => {
               </View>
             </View>
             <TouchableOpacity
-              style={[
-                styles.permissionBtn,
-                isGpsDisabled && styles.permissionBtnWarning,
-              ]}
+              style={[styles.permissionBtn, isGpsDisabled && styles.permissionBtnWarning]}
               onPress={
                 isGpsDisabled
-                  ? () => requestForeground() // Re-triggering watch will show OS dialog
+                  ? () => requestForeground()
                   : permissionStatus === 'blocked'
                   ? goToSettings
                   : requestForeground
@@ -291,42 +241,24 @@ const HomeScreen = () => {
               activeOpacity={0.8}
             >
               <Text style={styles.permissionBtnText}>
-                {isGpsDisabled
-                  ? 'Enable'
-                  : permissionStatus === 'blocked'
-                  ? 'Settings'
-                  : 'Enable'}
+                {isGpsDisabled ? 'Enable' : permissionStatus === 'blocked' ? 'Settings' : 'Enable'}
               </Text>
             </TouchableOpacity>
           </View>
         )}
 
         {tripsInitialLoading ? (
-          <Loader
-            message="Loading trips…"
-            fill={false}
-            style={styles.tripsLoader}
-          />
+          <Loader message="Loading trips…" fill={false} style={styles.tripsLoader} />
         ) : (
           <>
             {activeTrip ? (
-              <ActiveTripActions
-                trip={activeTrip}
-                navigation={navigation}
-                isTracking={isTracking}
-              />
+              <ActiveTripActions trip={activeTrip} navigation={navigation} isTracking={isTracking} />
             ) : nextTrip ? (
-              <UpcomingTripActions
-                trip={nextTrip}
-                navigation={navigation}
-                requestBackground={requestBackground}
-              />
+              <UpcomingTripActions trip={nextTrip} navigation={navigation} requestBackground={requestBackground} />
             ) : (
               <View style={styles.emptyCard}>
                 <Text style={styles.emptyTitle}>No active trips</Text>
-                <Text style={styles.emptySubtitle}>
-                  Your next assignment will appear here
-                </Text>
+                <Text style={styles.emptySubtitle}>Your next assignment will appear here</Text>
               </View>
             )}
 
@@ -339,16 +271,14 @@ const HomeScreen = () => {
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Upcoming Trips</Text>
                 <View style={styles.laterList}>
-                  {(activeTrip ? upcomingTrips : upcomingTrips.slice(1)).map(
-                    trip => (
-                      <UpcomingTripActions
-                        key={trip.id}
-                        trip={trip}
-                        navigation={navigation}
-                        requestBackground={requestBackground}
-                      />
-                    ),
-                  )}
+                  {(activeTrip ? upcomingTrips : upcomingTrips.slice(1)).map(trip => (
+                    <UpcomingTripActions
+                      key={trip.id}
+                      trip={trip}
+                      navigation={navigation}
+                      requestBackground={requestBackground}
+                    />
+                  ))}
                 </View>
               </View>
             )}

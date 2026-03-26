@@ -10,9 +10,7 @@ export const ENDPOINTS = {
   DRIVER: {
     PROFILE: '/drivers/profile',
     UPDATE_PROFILE: '/drivers/profile',
-    LOCATION_UPDATE: (id: string) => `/drivers/trips/${id}/location`,
-    DOCUMENTS: '',
-    BANK_ACCOUNT: '',
+    LOCATION_UPDATE: (id: string) => `/drivers/trips/${id}/location`
   },
 
   // Trips
@@ -25,4 +23,11 @@ export const ENDPOINTS = {
     SCAN_TICKET: '/drivers/scan-ticket',
   },
 
+  // Notifications
+  NOTIFICATIONS: {
+    REGISTER: '/notifications/devices/register',
+    LIST: '/notifications',
+    MARK_READ: (id: string) => `/notifications/${id}/read`,
+    MARK_ALL_READ: '/notifications/read-all',
+  },
 } as const;

@@ -10,8 +10,17 @@ import { navigationRef } from '../navigation/navigationRef';
 import QueryProvider from '../providers/QueryProvider';
 import UIProvider from '../providers/UIProvider';
 import { DriverProvider } from '../context/DriverContext';
+import { initNotifications } from '../utils/notificationUtility';
 
 const AppRoot = () => {
+  React.useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+    (async () => {
+      unsubscribe = await initNotifications();
+    })();
+    return () => unsubscribe?.();
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

@@ -19,8 +19,8 @@ import {
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import type { NavigationProp } from '@react-navigation/native';
 import BaseLayout from '../layouts/BaseLayout';
-import Loader from '../components/ui/Loader';
 import DriverProfileCard from '../features/settings/components/DriverProfileCard';
+import DriverProfileCardSkeleton from '../features/settings/components/DriverProfileCardSkeleton';
 import SettingsSection from '../features/settings/components/SettingsSection';
 import SettingsRow from '../features/settings/components/SettingsRow';
 import { colors } from '../theme/colors';
@@ -31,12 +31,16 @@ import { modal } from '../lib/modal';
 import { tokenStorage } from '../api/tokenStorage';
 import { APP_CONFIG } from '../config/app';
 
+import { useQueryClient } from '@tanstack/react-query';
+import { profileStorage } from '../storage/profileStorage';
+
 const ICON_SIZE = 18;
 const ICON_STROKE = 1.75;
 
 const SettingsScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { driver, isLoading, isError, refetch } = useDriver();
+  const queryClient = useQueryClient();
 
   const handleLogout = () => {
     modal.confirm(
@@ -44,8 +48,9 @@ const SettingsScreen = () => {
       'Are you sure you want to log out of your account?',
       () => {
         tokenStorage.clearAll();
-        // Reset the DriverProvider state (sets hasToken to false and clears data)
-        refetch();
+        profileStorage.clear();
+        queryClient.clear();
+        
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
@@ -55,14 +60,6 @@ const SettingsScreen = () => {
       },
     );
   };
-
-  if (isLoading && !driver && !isError) {
-    return (
-      <BaseLayout>
-        <Loader message="Loading settings…" />
-      </BaseLayout>
-    );
-  }
 
   return (
     <BaseLayout>
@@ -76,12 +73,14 @@ const SettingsScreen = () => {
           <Text style={styles.headingSubtitle}>Manage your profile & preferences</Text>
         </View>
 
-        {driver && (
+        {isLoading && !driver ? (
+          <DriverProfileCardSkeleton />
+        ) : driver ? (
           <DriverProfileCard
             profile={driver}
             onEditPress={() => navigation.navigate(ROUTES.PROFILE_DETAIL)}
           />
-        )}
+        ) : null}
 
         {!driver && isError ? (
           <TouchableOpacity

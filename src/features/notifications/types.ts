@@ -3,18 +3,16 @@ export type NotificationCategory =
   | 'payment'
   | 'system'
   | 'alert'
-  | 'promo';
+  | 'promo'
+  | string; // Handle unexpected types from backend
 
 export type Notification = {
   id: string;
-  category: NotificationCategory;
+  type: NotificationCategory;
   title: string;
-  body: string;
-  /** ISO timestamp */
+  content: string;
   createdAt: string;
-  isRead: boolean;
-  /** Optional image URL — banner-style media notification */
+  read: boolean;
   imageUrl?: string;
-  /** Optional deep-link data (e.g. trip id to navigate to) */
-  meta?: Record<string, string>;
+  metadata?: any;
 };

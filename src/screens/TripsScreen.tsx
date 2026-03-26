@@ -8,15 +8,12 @@ import {
   RefreshControl,
   Platform,
 } from 'react-native';
-import DateTimePicker, {
-  type DateTimePickerChangeEvent,
-  DateTimePickerAndroid,
-} from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Calendar, X } from 'lucide-react-native';
 import BaseLayout from '../layouts/BaseLayout';
 import Loader from '../components/ui/Loader';
+import DatePicker, { openAndroidDatePicker } from '../components/ui/DatePicker';
 import TripCard from '../features/trips/components/TripCard';
 import TripFilterTab from '../features/trips/components/TripFilterTab';
 import { colors } from '../theme/colors';
@@ -52,35 +49,21 @@ const TripsScreen = () => {
 
   const trips = sortTripsByScheduledTime(data?.data ?? []);
 
-  /** iOS: inline picker is mounted while `showPicker` is true. */
-  const handleIosValueChange = useCallback(
-    (_event: DateTimePickerChangeEvent, date: Date) => {
-      setDateFilter(dateToISO(date));
-      setShowPicker(false);
-    },
-    [],
-  );
-
-  const handleIosPickerDismiss = useCallback(() => {
+  const onDateChange = useCallback((date: Date) => {
+    setDateFilter(dateToISO(date));
     setShowPicker(false);
   }, []);
 
-  /** Android: open the system dialog imperatively (declarative picker is unreliable here). */
   const openDatePicker = useCallback(() => {
     if (Platform.OS === 'android') {
-      DateTimePickerAndroid.open({
+      openAndroidDatePicker({
         value: dateFilter ? new Date(dateFilter) : new Date(),
-        mode: 'date',
-        display: 'default',
-        onValueChange: (_event: DateTimePickerChangeEvent, date: Date) => {
-          setDateFilter(dateToISO(date));
-        },
-        onDismiss: () => {},
+        onChange: onDateChange,
       });
       return;
     }
     setShowPicker(true);
-  }, [dateFilter]);
+  }, [dateFilter, onDateChange]);
 
   const clearDateFilter = () => setDateFilter(undefined);
 
@@ -125,16 +108,12 @@ const TripsScreen = () => {
         />
       </View>
 
-      {Platform.OS === 'ios' && showPicker && (
-        <DateTimePicker
-          mode="date"
-          display="inline"
-          value={dateFilter ? new Date(dateFilter) : new Date()}
-          onValueChange={handleIosValueChange}
-          onDismiss={handleIosPickerDismiss}
-          themeVariant="light"
-        />
-      )}
+      <DatePicker
+        show={showPicker}
+        value={dateFilter ? new Date(dateFilter) : new Date()}
+        onChange={onDateChange}
+        onClose={() => setShowPicker(false)}
+      />
 
       {isLoading ? (
         <Loader message="Loading trips…" />

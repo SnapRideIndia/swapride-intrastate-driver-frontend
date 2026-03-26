@@ -4,6 +4,8 @@ import { verifyOtpApi } from '../authService';
 import { tokenStorage } from '../../../api/tokenStorage';
 import { DRIVER_PROFILE_KEY } from '../../driver/hooks/useDriverProfile';
 import { fetchDriverProfile } from '../../driver/driverService';
+import { profileStorage } from '../../../storage/profileStorage';
+import { syncFcmToken } from '../../../utils/notificationUtility';
 
 type Variables = { mobileNumber: string; otp: string };
 
@@ -15,10 +17,11 @@ export const useVerifyOtp = () => {
       verifyOtpApi(mobileNumber, otp),
     onSuccess: async ({ data }) => {
       tokenStorage.saveAuthResponse(data);
-      // Load profile immediately to warm up the cache
       try {
         const { data: profile } = await fetchDriverProfile();
+        profileStorage.save(profile);
         queryClient.setQueryData(DRIVER_PROFILE_KEY, profile);
+        syncFcmToken(true);
       } catch {
         queryClient.invalidateQueries({ queryKey: DRIVER_PROFILE_KEY });
       }

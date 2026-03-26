@@ -7,6 +7,7 @@ import {
   ScrollView,
   Platform,
   Image,
+  Keyboard,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -71,8 +72,12 @@ const LoginScreen = ({ navigation }: Props) => {
             label="Mobile Number"
             value={phone}
             onChangeText={text => {
-              setPhone(text.replace(/\D/g, ''));
+              const formatted = text.replace(/\D/g, '');
+              setPhone(formatted);
               if (error) setError('');
+              if (formatted.length === 10) {
+                Keyboard.dismiss();
+              }
             }}
             keyboardType="number-pad"
             placeholder="9876543210"

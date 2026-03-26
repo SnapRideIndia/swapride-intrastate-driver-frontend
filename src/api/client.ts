@@ -165,7 +165,6 @@ apiClient.interceptors.response.use(
           { url: reqUrl, serverMessage },
         );
         tokenStorage.clearAll();
-        toast.warning('Session Expired', 'Please log in again to continue.');
         resetToLogin();
         return Promise.reject(error);
       }
@@ -206,7 +205,6 @@ apiClient.interceptors.response.use(
         devAuthError('Refresh FAILED → logout', { url: reqUrl, refreshError });
         processQueue(refreshError, null);
         tokenStorage.clearAll();
-        toast.warning('Session Expired', 'Please log in again to continue.');
         resetToLogin();
         return Promise.reject(refreshError);
       } finally {

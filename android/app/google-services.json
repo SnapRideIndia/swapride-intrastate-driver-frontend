@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "32487957135",
+    "project_id": "swapride-intrastate-72729",
+    "storage_bucket": "swapride-intrastate-72729.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32487957135:android:6698be8c4799b7448486fa",
+        "android_client_info": {
+          "package_name": "com.swapride"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5pmmco0Nqqo_-cdDd0gMZKgKLXJC6xkg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32487957135:android:a0b909fe57de474b8486fa",
+        "android_client_info": {
+          "package_name": "com.swaprideintrastatedriverfrontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5pmmco0Nqqo_-cdDd0gMZKgKLXJC6xkg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

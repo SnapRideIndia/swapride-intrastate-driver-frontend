@@ -39,12 +39,14 @@ const CATEGORY_CONFIG: Record<NotificationCategory, CategoryConfig> = {
 
 
 const NotificationCard = ({ notification, onPress, onMarkRead }: Props) => {
-  const cfg = CATEGORY_CONFIG[notification.category];
-  const { isRead, imageUrl } = notification;
+  const typeKey = (notification.type || '').toLowerCase() as NotificationCategory;
+  const cfg = CATEGORY_CONFIG[typeKey] || CATEGORY_CONFIG.system; // Fallback to system icon
+  const { read } = notification;
+  const imageUrl = notification.imageUrl || notification.metadata?.images?.[0];
 
   return (
     <TouchableOpacity
-      style={[styles.card, !isRead && styles.cardUnread]}
+      style={[styles.card, !read && styles.cardUnread]}
       onPress={() => {
         onMarkRead(notification.id);
         onPress(notification);
@@ -52,7 +54,7 @@ const NotificationCard = ({ notification, onPress, onMarkRead }: Props) => {
       activeOpacity={0.75}
     >
       {/* Unread dot */}
-      {!isRead && <View style={styles.unreadDot} />}
+      {!read && <View style={styles.unreadDot} />}
 
       {/* Top row — icon + text */}
       <View style={styles.topRow}>
@@ -62,13 +64,13 @@ const NotificationCard = ({ notification, onPress, onMarkRead }: Props) => {
 
         <View style={styles.textBlock}>
           <View style={styles.titleRow}>
-            <Text style={[styles.title, !isRead && styles.titleBold]} numberOfLines={1}>
+            <Text style={[styles.title, !read && styles.titleBold]} numberOfLines={1}>
               {notification.title}
             </Text>
             <Text style={styles.time}>{formatRelativeTime(notification.createdAt)}</Text>
           </View>
           <Text style={styles.body} numberOfLines={imageUrl ? 2 : 3}>
-            {notification.body}
+            {notification.content}
           </Text>
         </View>
       </View>
